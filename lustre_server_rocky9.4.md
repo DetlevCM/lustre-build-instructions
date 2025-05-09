@@ -280,6 +280,15 @@ As a result it is not advised to rerun commands.
 IF at any step during the process steps fails, analyze the failure and return to the original source rpm package and retrace the steps.
 
 
+#### Notes 27 Nov 2024:
+
+additional required package for kernel
+```dnf install systemd-ukify```
+
+additional required packages for lustre
+```dnf install libnl3-devel.x86_64```
+```dnf install libyaml-devel.x86_64```
+
 ### build lustre
 
 As the underlying operating system is now prepared, the lustre server can now be built and installed.
