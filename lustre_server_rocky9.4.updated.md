@@ -1,6 +1,14 @@
-# Lustre Server
+# Lustre Server on Rocky 9.4 - Updated 2025.05.09 - Source Install Works, Bugs with RPMs
 
-## Rocky 9.4 Installation - Updated 2025.05.09 - Source Install works, bugs with rpms
+## Structure
+
+- set up Rocky Linux 9.4 (iso)
+- download and insatll required packages
+- download specific versions of packages from rocky vault and install 
+- download the source code for e2fsprogs, lustre and select version
+- start building and installing from source code: e2fsprogs, kernel, lustre
+
+# Rocky 9.4 Installation & Preparation
 
 The first step consists of setting up a (virtual machine).
 In the case of Rocky 9.4  there should not be a requirement for any special settings, contrary to 8.10 networking should work right away.
@@ -11,26 +19,26 @@ The iso file can be obtained from the Rocky Vault:
 wget https://dl.rockylinux.org/vault/rocky/9.4/isos/x86_64/Rocky-9-latest-x86_64-dvd.iso
 ```
 
-### Hardware Configuration
+## Hardware Configuration
 
 The lazy choice is to use a single disk.
 The size chosen was 100GB to ensure sufficient space for the kernel compilation leaving plenty of space to spare.
 At least 36GB of space are required just for installation, sources and compilation files.
 It is also possible to use a smaller root disk and a data partition.
 
-2 threads or 4 threads (1/2 cores) are sufficient, as are 3072MB of RAM.
-Of course a more performant virtual machine will compile the server faster.
+2 threads or 4 threads (1/2 cores) are sufficient, as are 3GB of RAM.
+Of course a more performant virtual machine will compile the server faster, and RAM requirements scale with parallel builds.
+4 threads benefit from 16GB of RAM.
 
 The networking employed is "NAT", network address translation, which is well suited to local tests.
 
-### Installation Settings
+## Installation Settings
+
+Rocky provides a set of default profiles as well as collections:
 
 - the Server profile (no GUI) is selected.
-
-Additional Software Selected:
-
-- Development Tools
-- RPM development tools
+- Development Tools,
+- RPM development tools are slected.
 
 As a lazy option only the root user is configured.
 **Warning, this is a lazy option for testing in a VM.**
@@ -39,51 +47,41 @@ A single partition is used.
 
 The operating system can be installed and further steps continue after installation.
 
-## Preparation
+## Preparation of Rocky 9.4
 
 To compile both the kernel and the lustre server, a number of additional packages are required.
-The largest set is taken from an online tutorial and may thus be more expansive than necessary.
+The largest set was initially taken from an online tutorial and may thus be more expansive than necessary.
+It was then expanded to include the supplementary packages required on Rocky 9.4.
 It should be noted that the "powertools" in Rocky 8 have become "crb" ("code ready builder") from Rocky 9 onward.
+
+### Essential Packages
 
 Assuming you are root:
 
 ```bash
 yum -y groupinstall "Development Tools"
+yum config-manager --set-enabled crb
 ```
 
-Followed by:
-
 ```bash
-yum config-manager --set-enabled crb
 dnf install -y gcc autoconf libtool which make patch diffutils file binutils-devel python38 python3-devel elfutils-devel libselinux-devel libaio-devel dnf-plugins-core bc bison flex git libyaml-devel libnl3-devel libmount-devel json-c-devel redhat-lsb libssh-devel libattr-devel libtirpc-devel libblkid-devel openssl-devel libuuid-devel texinfo texinfo-tex
-yum -y install audit-libs-devel binutils-devel elfutils-devel kabi-dw ncurses-devel newt-devel numactl-devel openssl-devel pciutils-devel perl perl-devel python2 python3-docutils xmlto xz-devel elfutils-libelf-devel libcap-devel libcap-ng-devel llvm-toolset libyaml libyaml-devel kernel-rpm-macros kernel-abi-whitelists opencsd-devel
+dnf -y install audit-libs-devel binutils-devel elfutils-devel kabi-dw ncurses-devel newt-devel numactl-devel openssl-devel pciutils-devel perl perl-devel python2 python3-docutils xmlto xz-devel elfutils-libelf-devel libcap-devel libcap-ng-devel llvm-toolset libyaml libyaml-devel kernel-rpm-macros kernel-abi-whitelists opencsd-devel
 dnf install -y epel-release
 dnf install -y ccache pdsh
-```
-
-Note: `resource-agents` available on Rocky 8.10 are not available nor required.
-
-```bash
 dnf install -y bpftool dwarves java-devel libbabeltrace-devel libbpf-devel libmnl-devel net-tools rsync
-# May only be needed on RHEL9 derivatives:
 dnf install -y python3-devel
-```
-
-Following the initial batch of packages, compilation attempts will identify further missing packages that are required.
-We add these next, this is the list from Rocky 8.10:
-
-```bash
 dnf install -y audit-libs-devel clang kabi-dw libcap-devel libcap-ng-devel libtraceevent-devel llvm ncurses-devel newt-devel numactl-devel pciutils-devel python3-docutils system-sb-certs xmlto
-```
-
-Followed by additional packages required on Rocky 9.4, first for the kernel and then lustre server:
-
-```bash
 dnf install -y WALinuxAgent-cvm gcc-plugin-devel glibc-static kernel-rpm-macros perl-devel systemd-boot-unsigned
 dnf install -y libnl3 libnl3-devel libyaml libyaml-devel
 ```
 
-### Support for building rpms
+### For LustrePerfMon
+
+```bash
+dnf install -y libtool-ltdl libtool-ltdl-devel
+```
+
+### Support for Building RPM
 
 To build the rpms - at least on 8.10 (when the issue was raised), one needs two more packages:
 
@@ -91,43 +89,36 @@ To build the rpms - at least on 8.10 (when the issue was raised), one needs two 
 dnf install -y kernel-abi-stablelists.noarch lsb_release texinfo
 ```
 
-#### downgrade libbpf
+### Version Specific Packages
 
-*Problem 1:*
-*error: Failed dependencies:*
-*kernel-headers >= 5.14.0-473 is needed by (installed) libbpf-devel-2:1.4.0-1.el9.x86_64*
+The default packages installed by Rocky can be too new, ad the minor versions implicitly roll over.
+At the time of writing (2025/05/09), only a specific kernel and libbpf and libbpf-devel need to be downloaded from the Rocky vault.
+This list may change in the future!
+
+### Downgrade libbpf to Match Kernel Version
 
 ```bash
+cd 
 wget https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/l/libbpf-1.3.0-2.el9.x86_64.rpm
 wget https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/l/libbpf-devel-1.3.0-2.el9.x86_64.rpm
-```
 
-```bash
 dnf install -y libbpf-*.rpm
 ```
 
-### Rocky does not really have stable versions
+### Downgrade Kernel to Use a Version Supported by Lustre (here the lastest supported version)
 
-from iso install:
-
-[root@localhost ~]# uname -a
-Linux localhost.localdomain 5.14.0-427.13.1.el9_4.x86_64 #1 SMP PREEMPT_DYNAMIC Wed May 1 19:11:28 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
-
-So: we can work with the iso version, or get a kernel from the Rocky Vault:
-
+The original 9.4 iso comes with kernel 5.14.0-427.13.1.el9_4.
+The latest supported kernel is 5.14.0-427.33.1.el9_4.
 <!-- *check supported kernel... https://jira.whamcloud.com/browse/LU-18150* -->
 
 ```bash
+cd
 wget https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/kernel-5.14.0-427.33.1.el9_4.x86_64.rpm
 wget https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/source/tree/Packages/k/kernel-5.14.0-427.33.1.el9_4.src.rpm
 wget https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/kernel-core-5.14.0-427.33.1.el9_4.x86_64.rpm
 wget https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/kernel-modules-core-5.14.0-427.33.1.el9_4.x86_64.rpm
 wget https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/kernel-modules-5.14.0-427.33.1.el9_4.x86_64.rpm
-```
 
-install the packages
-
-```bash
 dnf install -y \
 kernel-core-5.14.0-427.33.1.el9_4.x86_64.rpm \
 kernel-modules-5.14.0-427.33.1.el9_4.x86_64.rpm \
@@ -135,11 +126,16 @@ kernel-5.14.0-427.33.1.el9_4.x86_64.rpm \
 kernel-modules-core-5.14.0-427.33.1.el9_4.x86_64.rpm
 ```
 
-## e2fsprog (patched)
+*Note: we do not install the src package!*
 
-As lustre requires modified e2fsprogs, these need to be downloaded from the whamcloud repo:
+# Download the Sources
+
+## e2fsprogs (patched) - Download
+
+As lustre requires modified e2fsprogs, it need to be downloaded from the whamcloud repo:
 
 ```bash
+cd
 git clone "https://review.whamcloud.com/tools/e2fsprogs" e2fsprogs
 ```
 
@@ -147,14 +143,38 @@ While it may be tempting to pick the latest release, it is necessary to use a ve
 The version proposed in the tutorial is `v1.47.0-wc1`, it can be selected as follows from the `e2fsprogs` directory, this build uses a later version available at the time of updating these instructions.
 
 ```bash
-cd e2fsprogs
+cd ~/e2fsprogs
 git checkout v1.47.2-wc1
 ```
+*Note: It may be necessary to check compatibility between e2fsprocs-wc and lustre releases!*
 
-In the directory, we can then configure the build.
+### Lustre - Download
+
+The next step consists of first cloning the lustre source code repository:
+
+```bash
+cd
+git clone "https://review.whamcloud.com/fs/lustre-release"
+```
+
+*Note:*
+*As we copy files from and to the lustre source code, we should check out the version we intend to build before continuing:*
+
+```bash
+cd ~/lustre-release
+git checkout 2.16.1
+```
+
+# Build e2fsprogs and Lustre
+
+## e2fsprogs (patched) - Build and Install
+
+The first step in building lustre, is to build the patched e2fsprogs.
+Change to the source code directory and then configure the build.
 The configuration has been copied over from the source tutorial, except for the removal of `--enable-quota` which is not recognized.
 
 ```bash
+cd ~/e2fsprogs
 ./configure --with-root-prefix=/usr --enable-elf-shlibs --disable-uuidd --disable-fsck --disable-e2initrd-helper --disable-libblkid --disable-libuuid --disable-fuse2fs
 ```
 
@@ -166,17 +186,16 @@ make install
 ```
 
 It is possible to build rpm packages with `make rpm`, however this results in an error in root acls during in one fo the tests when an unpatched kernel is employed.
-
-Further rename test `d_print_acl` to `_d_print_acl` to disable it. (Or delete it, it fails and prevents building the rpms...)
-Equally `m_rootdir_acl` to `_m_rootdir_acl`.
+To build the rpm packages, one can rename test `d_print_acl` to `_d_print_acl` to disable it, the same for `m_rootdir_acl` renamed to `_m_rootdir_acl`.
+(Or one could delete it too.)
 
 Thus, to build the rpms, one can run the following:
 
 ```bash
-cd tests
+cd ~/e2fsprogs/tests
 mv d_print_acl _d_print_acl
 mv m_rootdir_acl _m_rootdir_acl
-cd ..
+cd ~/e2fsprogs
 make rpm
 ```
 
@@ -184,41 +203,31 @@ make rpm
 *Disabling tests is typically not a  good way to go, however here it is the only easy way of building the rpm.*
 *A longterm solution would be to understand the test failure and fix the underlying cause.*
 
-In addition, the interdependencies between packages create additional complications, thus building the rpm packages was not further explored as this stage and is not part of this set of instructions.
+### A note on RPMs and Lustre RPMs
 
-As the original tutorial employs a binary installation, this is the recommended path.
-
-### A note on rpms and lustre rpms
-
-Lustre will check for the e2fsprogs version when building rpms... - Thus, to build a lustre rpm, it is necessary to install the e2fsprogs rpms:
+It is not necessary to build and install the rpm-version of e2fsprogs for a binary installation of lustre.
+However the rpm become necessary when one attempts to build the lustre rpms, as the code will check for the available version of e2fsprogs.
+Thus, to build a lustre rpm, it is necessary to install the e2fsprogs rpms which by default will be built into `~/rpmbuild/RPMS/x86_64`.
 
 ```bash
 cd ~/rpmbuild/RPMS/x86_64
 dnf install ./*.rpm
 ```
 
-## lustre & the patched kernel
+## Lustre & the Patched Kernel - Build and Install
 
-### download lustre
+### Pre-Prepare Lustre
 
-The next step consists of first cloning the lustre source code repository:
-
-```bash
-git clone "https://review.whamcloud.com/fs/lustre-release"
-```
-
-*Note:*
-*As we copy files from and to the lustre source code, we should check out the version we intend to build before continuing:*
-
+While we downloaded lustre and selected the version, we did not yet create the configuration scripts.
+Files are copied to and from the lustre source code, thus we should prepare it before building the patched kernel, necessary for building lustre.
 The configuration scripts for the lustre source code are prepared using `autogen.sh`
 
 ```bash
-cd lustre-release
-git checkout 2.16.1
+cd ~/lustre-release
 sh ./autogen.sh
 ```
 
-### prepare patched kernel
+### Prepare Patched Kernel
 
 Before the lustre server can be built and installed, is is necessary to prepare a patched kernel and install it first.
 
@@ -313,13 +322,7 @@ echo '# x86_64' > ~/kernel/rpmbuild/SOURCES/kernel-`uname -m`.config
 cat ~/lustre-release/lustre/kernel_patches/kernel_configs/kernel-5.14.0-5.14-rhel9.4-`uname -m`.config >> ~/kernel/rpmbuild/SOURCES/kernel-`uname -m`.config
 ```
 
-#### build patched kernel
-
-<!--
-```bash
-dnf install -y systemd-ukify
-```
--->
+### Build Patched Kernel
 
 And now we can finally start to build the kernel:
 
@@ -330,7 +333,7 @@ rpmbuild -ba --with firmware --target `uname -m` --with baseonly \
            ~/kernel/rpmbuild/SPECS/kernel.spec
 ```
 
-#### install patched kernel
+### Install Patched Kernel
 
 Once successfully built, we can then install the new kernel and reboot the system.
 
@@ -346,19 +349,17 @@ After the reboot it is possible to verify that the newly installed kernel has be
 uname -r
 ```
 
-#### Notes
+#### Note
 
 Many of the commands add content to files.
 As a result it is not advised to rerun commands.
 IF at any step during the process steps fails, analyze the failure and return to the original source rpm package and retrace the steps.
 
-### build lustre
+### Prepare and Build lustre
 
 As the underlying operating system is now prepared, the lustre server can now be built and installed.
 We configure lustre while pointing it at the kernel source code that was employed to build the patched kernel.
 An important caveat is that as a local test VM, the kernel was built as root under /root, not necessarily a recommended approach.
-
-**it is possible something went wrong with the naming somewhere as the naming pattern changed, but this works...**
 
 ```bash
 cd ~/lustre-release
@@ -367,15 +368,13 @@ cd ~/lustre-release
 
 Now the lustre server can be built and installed:
 
-*Note: With 16GB of memory, it is possible to build with 4 threads, 6 cause errors.*
-
 ```bash
 make
 make install
 depmod -a
 ```
 
-#### building lustre rpms
+#### Building Lustre RPMs
 
 This currently hits a snag with the following error...
 
@@ -393,7 +392,9 @@ RPM build errors:
 make: *** [autoMakefile:1352: rpms] Error 1
 ```
 
-### run and test lustre locally
+...to be resolved in future updates...
+
+### Run and Test Lustre Locally
 
 *Note:*
 *A Rocky 9.4 quirk is that the test script will not work by default.*
@@ -474,10 +475,4 @@ setting jobstats to procname_uid
 Setting lustre.sys.jobid_var from disable to procname_uid
 Waiting 90s for 'procname_uid'
 disable quota as required
-```
-
-## For LustrePerfMon
-
-```bash
-dnf install libtool-ltdl.x86_64 libtool-ltdl-devel.x86_64
 ```
