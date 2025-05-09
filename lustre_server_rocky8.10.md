@@ -81,7 +81,7 @@ git clone "https://review.whamcloud.com/tools/e2fsprogs" e2fsprogs
 ```
 
 While it may be tempting to pick the latest release, it is necessary to use a version that includes patches to make it lustre compatible.
-The version proposed in the tutorieal is `v1.47.0-wc1`, it can be selected as follows from the `e2fsprogs` directory.
+The version proposed in the tutorial is `v1.47.0-wc1`, it can be selected as follows from the `e2fsprogs` directory.
 (Tested 2024/10)
 
 ```bash
@@ -90,7 +90,7 @@ git checkout v1.47.0-wc1
 ```
 
 In the directory, we can then configure the build.
-The configuration has been copied over from the source tutorial, except for the removal of `--enable-quota` which is not recognised.
+The configuration has been copied over from the source tutorial, except for the removal of `--enable-quota` which is not recognized.
 
 ```bash
 ./configure --with-root-prefix=/usr --enable-elf-shlibs --disable-uuidd --disable-fsck --disable-e2initrd-helper --disable-libblkid --disable-libuuid --disable-fuse2fs
@@ -120,7 +120,7 @@ git clone "https://review.whamcloud.com/fs/lustre-release"
 
 *Note:*
 *At the time of writing (2024/10), the master branch of the code was used.*
-*This corresponds to lustre 2.16-RC1. In thef future it may be necessary to selecte a specific tag.*
+*This corresponds to lustre 2.16-RC1. In the future it may be necessary to select a specific tag.*
 
 The configuration scripts for the lustre source code are prepared using `autogen.sh`
 
@@ -131,7 +131,7 @@ sh ./autogen.sh
 
 ### prepare patched kernel
 
-Before the lustre server can be buult and installed, is is necessary to prepare a patched kernel and install it first.
+Before the lustre server can be built and installed, is is necessary to prepare a patched kernel and install it first.
 
 Contrary to the original source, it is easier to download the src.rpm package using dnf.
 This further removes reliance on kernel source rpms hosted by a third party.
@@ -185,9 +185,9 @@ Which can be achieved via the proposed command line as follows:
 sed -i '/# IO Schedulers/a CONFIG_IOSCHED_DEADLINE=y\nCONFIG_DEFAULT_IOSCHED="deadline"' ~/lustre-release/lustre/kernel_patches/kernel_configs/kernel-4.18.0-4.18-rhel8.10-`uname -m`.config
 ```
 
-The lustre source code proivdes a series of patches that become more extensive as the kernel develops.
+The lustre source code provides a series of patches that become more extensive as the kernel develops.
 These can be, as per the tutorial, collected into a single file.
-The tutorial limited the kernel range to rhel8.7-series, which was adapted to include rehel8.10-series for rocky 8.10 support.
+The tutorial limited the kernel range to rhel8.7-series, which was adapted to include rhel8.10-series for rocky 8.10 support.
 
 Thus the line becomes the following:
 
@@ -263,7 +263,7 @@ IF at any step during the process steps fails, analyze the failure and return to
 ### build lustre
 
 As the underlying operating system is now prepared, the lustre server can now be built and installed.
-We condigure lustre while pointing it at the kernel source code that was employed to build the patched kernel.
+We configure lustre while pointing it at the kernel source code that was employed to build the patched kernel.
 An important caveat is that as a local test VM, the kernel was built as root under /root, not necessarily a recommended approach.
 
 >
