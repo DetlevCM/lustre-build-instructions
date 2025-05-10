@@ -1,10 +1,10 @@
-# Lustre Server on Rocky 9.4 - Updated 2025.05.09 - Source Install Works, Bugs with RPMs
+# Lustre Server on Rocky 9.4 - Updated 2025.05.09
 
 ## Structure
 
 - set up Rocky Linux 9.4 (iso)
-- download and insatll required packages
-- download specific versions of packages from rocky vault and install 
+- download and install required packages
+- download specific versions of packages from rocky vault and install
 - download the source code for e2fsprogs, lustre and select version
 - start building and installing from source code: e2fsprogs, kernel, lustre
 
@@ -38,7 +38,7 @@ Rocky provides a set of default profiles as well as collections:
 
 - the Server profile (no GUI) is selected.
 - Development Tools,
-- RPM development tools are slected.
+- RPM development tools are selected.
 
 As a lazy option only the root user is configured.
 **Warning, this is a lazy option for testing in a VM.**
@@ -146,7 +146,8 @@ The version proposed in the tutorial is `v1.47.0-wc1`, it can be selected as fol
 cd ~/e2fsprogs
 git checkout v1.47.2-wc1
 ```
-*Note: It may be necessary to check compatibility between e2fsprocs-wc and lustre releases!*
+
+*Note: It may be necessary to check compatibility between e2fsprogs-wc and lustre releases!*
 
 ### Lustre - Download
 
@@ -376,23 +377,15 @@ depmod -a
 
 #### Building Lustre RPMs
 
-This currently hits a snag with the following error...
+To build the lustre rpm packages, it is "only" necessary to call "make rpms", with one important different in the configuration.
+Shared libraries are required to build the rpm packages, thus the configure line becomes the following:
 
 ```bash
-refix) <= 4.0-1
-Processing files: lustre-devel-2.16.1_dirty-1.el9.x86_64
-error: Could not open %files file /tmp/rpmbuild-lustre-root-e8XiLyBD/BUILD/lustre-2.16.1_dirty/lustre-devel.files: No such file or directory
-
-
-RPM build errors:
-    Duplicate build-ids /tmp/rpmbuild-lustre-root-e8XiLyBD/BUILDROOT/lustre-2.16.1_dirty-1.el9.x86_64/sbin/mount.lustre and /tmp/rpmbuild-lustre-root-e8XiLyBD/BUILDROOT/lustre-2.16.1_dirty-1.el9.x86_64/sbin/mount.lustre_tgt
-    File listed twice: /usr/lib/.build-id/10/3dc4d5e8ec16c1332576500b1b13bef9ac2b7b
-    File listed twice: /usr/lib/.build-id/f3/f80e00e85d95173b033b9a6cb9fd897d1cb2f6
-    Could not open %files file /tmp/rpmbuild-lustre-root-e8XiLyBD/BUILD/lustre-2.16.1_dirty/lustre-devel.files: No such file or directory
-make: *** [autoMakefile:1352: rpms] Error 1
+cd ~/lustre-release
+./configure --with-linux=/root/kernel/rpmbuild/BUILD/kernel-5.14.0-427.33.1.el9_4/linux-5.14.0-427.33.1_lustre.el9.`uname -m`/ --disable-gss --disable-crypto
 ```
 
-...to be resolved in future updates...
+Otherwise, building the rpms will fail at lustre-devel.
 
 ### Run and Test Lustre Locally
 
