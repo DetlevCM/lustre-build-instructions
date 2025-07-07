@@ -22,6 +22,7 @@
         "jobstats",
         "kabi",
         "kabichk",
+        "lctl",
         "ldiskfs",
         "libaio",
         "libattr",
