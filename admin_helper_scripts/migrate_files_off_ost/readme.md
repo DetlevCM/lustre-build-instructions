@@ -9,11 +9,11 @@ This ensures that the user's files are retained unharmed (if the OST works) and 
 
 ## "Our" Process as Developed from Reading Manuals and Mailing List Discussions
 
-[!CAUTION]
-Be very careful when manipulating OSTs or admin functions on a lustre (or any) file system.
-In correct use carries a risk of data loss.
-Ideally back up your data (bit difficult with a typical lustre file system...) - and test the process on a test system (just a few VMs to replicate your configuration will do).
-Dry run code where possible and make sure you fully understand the implications of the actions you take, which are your responsibility alone.
+> [!CAUTION]
+> Be very careful when manipulating OSTs or admin functions on a lustre (or any) file system.
+> In correct use carries a risk of data loss.
+> Ideally back up your data (bit difficult with a typical lustre file system...) - and test the process on a test system (just a few VMs to replicate your configuration will do).
+> Dry run code where possible and make sure you fully understand the implications of the actions you take, which are your responsibility alone.
 
 So, warnings out of the way, on to the steps:
 
