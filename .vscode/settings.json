@@ -6,6 +6,8 @@
         "buildid",
         "ccache",
         "centos",
+        "CFLAGS",
+        "debuginfo",
         "depmod",
         "devel",
         "diffutils",
@@ -22,6 +24,7 @@
         "jobstats",
         "kabi",
         "kabichk",
+        "lbug",
         "lctl",
         "ldiskfs",
         "libaio",
@@ -44,6 +47,7 @@
         "llmount",
         "localdomain",
         "localrecov",
+        "lquota",
         "ltdl",
         "noarch",
         "numactl",
@@ -53,11 +57,13 @@
         "pdsh",
         "powertools",
         "procname",
+        "ptlrpc",
         "redhat",
         "replacepkgs",
         "rhel",
         "rootdir",
         "rpmbuild",
+        "rpminfo",
         "rpmmacros",
         "rpms",
         "shlibs",
@@ -71,6 +77,7 @@
         "uuidd",
         "whamcloud",
         "xattr",
-        "xmlto"
+        "xmlto",
+        "zypper"
     ]
 }
