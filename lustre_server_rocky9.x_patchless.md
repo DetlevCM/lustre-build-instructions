@@ -88,8 +88,13 @@ dnf install ./e2fsprogs-1.47.3-wc1.el9.x86_64.rpm \
 
 ```bash
 ## build lustre
+cd ~/lustre-release
+## to build a stable release, checkout
+git checkout 2.16.1 # for Rocky 9.4
+#git checkout 2.16.58 # minimum version for Rocky 9.6, kernel 5.14.0-570.52.1.el9_6.x86_64
 ./autogen.sh
 ./configure --enable-server
+make rpms
 ```
 
 ```bash
