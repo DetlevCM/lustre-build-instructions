@@ -145,10 +145,9 @@ git checkout 2.16.58 # minimum version for Rocky 9.6, kernel 5.14.0-570.52.1.el9
 make rpms
 ```
 
-Next lustre can be tested locally (if so desired) by installing the following rpms.
+Next you can test lustre locally (if so desired) by installing the following rpms.
 The names of the rpm files will depend on the selected lustre git tag.
 Resource agents would only be required for a high availability setup.
-(To do: check if wbcfs is required or optional!)
 
 ```bash
 ## Test installing the lustre rmps
@@ -157,12 +156,10 @@ dnf install \
 ./kmod-lustre-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
 ./lustre-osd-ldiskfs-mount-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
 ./kmod-lustre-osd-ldiskfs-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./lustre-osd-wbcfs-mount-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./kmod-lustre-osd-wbcfs-2.16.58_104_g6c4537f-1.el9.x86_64.rpm
 # dnf install ./lustre-resource-agents-2.16.58_104_g6c4537f-1.el9.x86_64.rpm 
 ```
 
-For a local test on Rocky Linux, it is necessary to set the hostname (assuming it is not already set):
+For a local test on Rocky Linux, it gis necessary to set the hostname (assuming it is not already set):
 
 ```bash
 hostnamectl set-hostname localhost

@@ -103,10 +103,8 @@ dnf install \
 ./lustre-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
 ./kmod-lustre-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
 ./lustre-osd-ldiskfs-mount-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./kmod-lustre-osd-ldiskfs-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./lustre-osd-wbcfs-mount-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./kmod-lustre-osd-wbcfs-2.16.58_104_g6c4537f-1.el9.x86_64.rpm \
-./lustre-resource-agents-2.16.58_104_g6c4537f-1.el9.x86_64.rpm 
+./kmod-lustre-osd-ldiskfs-2.16.58_104_g6c4537f-1.el9.x86_64.rpm
+#./lustre-resource-agents-2.16.58_104_g6c4537f-1.el9.x86_64.rpm # High availability only
 ```
 
 For a local test, set the hostname :
