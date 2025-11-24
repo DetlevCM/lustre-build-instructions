@@ -159,7 +159,7 @@ dnf install \
 # dnf install ./lustre-resource-agents-2.16.58_104_g6c4537f-1.el9.x86_64.rpm 
 ```
 
-For a local test on Rocky Linux, it gis necessary to set the hostname (assuming it is not already set):
+For a local test on Rocky Linux, it is necessary to set the hostname (assuming it is not already set):
 
 ```bash
 hostnamectl set-hostname localhost

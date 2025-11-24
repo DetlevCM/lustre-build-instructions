@@ -53,6 +53,7 @@
         "numactl",
         "opencsd",
         "openssl",
+        "patchless",
         "pciutils",
         "pdsh",
         "powertools",
