@@ -116,7 +116,7 @@ hostnamectl set-hostname localhost
 ```
 
 ```bash
-cd ~/lustre-release/lustre/tests/llmount.sh
+~/lustre-release/lustre/tests/llmount.sh
 ```
 
 This should successfully mount lustre under `/mnt/lustre`.
