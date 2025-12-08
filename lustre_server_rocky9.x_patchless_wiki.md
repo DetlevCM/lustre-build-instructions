@@ -19,8 +19,11 @@ The versions, git tags for e2fsprogs and lustre, listed in the following table h
 |         kernel        |  e2fsprogs  | lustre  |
 | --------------------- | ----------- | ------- |
 | 5.14.0-427.33.1.el9_4 | v1.47.2-wc1 | 2.16.1  |
+| 5.14.0-427.40.1.el9_4 | v1.47.3-wc1 | 2.16.1  |
 | 5.14.0-570.52.1.el9_6 | v1.47.3-wc1 | 2.16.58 |
 | 5.14.0-570.58.1.el9_6 | v1.47.3-wc1 | 2.16.59 |
+
+It is possible to upgrade Rocky, for example from 9.6 and then downgrade the kernel and associated kernel packages to for example 9.4, to support the use of a release version of lustre instead of a development version.
 
 ### dnf install \<packages\> - The Foundations
 

@@ -19,8 +19,4 @@ The work was carried out at the Humboldt Universität zu Berlin at the Computer-
 
 - [Building Lustre Server on Rocky 8.10](lustre_server_rocky8.10.md)
 - [Building Lustre Server on Rocky 9.4](lustre_server_rocky9.4.md)
-
-
-
-
-
+- [Building a Patchless Lustre Server on Rocky 9.4/9.6](lustre_server_rocky9.x_patchless.md)
