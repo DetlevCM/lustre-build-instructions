@@ -7,7 +7,7 @@ In order to test and experiment (or develop), it is advisable to set up a test s
 The current developers of lustre (Whamcloud, written October 2024) provide a set of instructions for the compilation of the lustre software on older releases, however more recent distros are lacking.
 (Though the `.rpm` files are available for other distributions.)
 
-The foundations for the instructions presented herin is a tutorial for building a test-lustre on Rocky 8.7 as provided by Whamcloud, available here: https://wiki.whamcloud.com/pages/viewpage.action?pageId=258179277
+The foundations for the instructions presented herein is a tutorial for building a test-lustre on Rocky 8.7 as provided by Whamcloud, available here: [https://wiki.whamcloud.com/pages/viewpage.action?pageId=258179277](https://wiki.whamcloud.com/pages/viewpage.action?pageId=258179277)
 
 This tutorial has been adapted to build lustre on other releases, resolving missing dependencies as well as the odd quirk.
 
