@@ -40,12 +40,12 @@ It is important that any development packages are the same version as the kernel
 Options are thus to either update the entire system before building, or to fix the kernel related packages at a specific release.
 Specific versions can be obtained from the Rocky Vault as required, for the following 9-series releases:
 
-- https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/ for Rocky 9.4
-- https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/k/
-- https://dl.rockylinux.org/vault/rocky/9.5/BaseOS/x86_64/os/Packages/k/ for Rocky 9.5
-- https://dl.rockylinux.org/vault/rocky/9.5/devel/x86_64/os/Packages/k/
-- https://dl.rockylinux.org/vault/rocky/9.6/BaseOS/x86_64/os/Packages/k/ for Rocky 9.6
-- https://dl.rockylinux.org/vault/rocky/9.6/devel/x86_64/os/Packages/k/
+- [https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/x86_64/os/Packages/k/) for Rocky 9.4
+- [https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/k/)
+- [https://dl.rockylinux.org/vault/rocky/9.5/BaseOS/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.5/BaseOS/x86_64/os/Packages/k/) for Rocky 9.5
+- [https://dl.rockylinux.org/vault/rocky/9.5/devel/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.5/devel/x86_64/os/Packages/k/)
+- [https://dl.rockylinux.org/vault/rocky/9.6/BaseOS/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.6/BaseOS/x86_64/os/Packages/k/) for Rocky 9.6
+- [https://dl.rockylinux.org/vault/rocky/9.6/devel/x86_64/os/Packages/k/](https://dl.rockylinux.org/vault/rocky/9.6/devel/x86_64/os/Packages/k/)
 
 If you build for a kernel from the Rocky Vault, you will need the following kernel related packages, from BaseOS for the first two, and devel from the second two:
 
