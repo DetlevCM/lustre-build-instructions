@@ -1,4 +1,4 @@
-# Patchless Rocky 9 - Starting from 9.4, Upgrade to 9.6, Installation on 9.6
+# Patchless Rocky 9 - Starting from 9.4, Upgrade to 9.6, Installation on 9.6, 9.7
 
 ## Prepare The OS
 
@@ -22,6 +22,7 @@ The versions, git tags for e2fsprogs and lustre, listed in the following table h
 | 5.14.0-427.40.1.el9_4 | v1.47.3-wc1 | 2.16.1  |
 | 5.14.0-570.52.1.el9_6 | v1.47.3-wc1 | 2.16.58 |
 | 5.14.0-570.58.1.el9_6 | v1.47.3-wc1 | 2.16.59 |
+| 5.14.0-611.16.1.el9_7 | v1.47.3-wc2 | 2.17.0  |
 
 It is possible to upgrade Rocky, for example from 9.6 and then downgrade the kernel and associated kernel packages to for example 9.4, to support the use of a release version of lustre instead of a development version.
 
