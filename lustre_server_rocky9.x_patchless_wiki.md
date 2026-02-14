@@ -84,7 +84,7 @@ dnf install -y kernel-debuginfo kernel-devel
 dnf install -y keyutils keyutils-libs keyutils-libs-devel
 
 ## for resource agents
-dnf  config-manager --set-enabled resilientstorage
+dnf config-manager --set-enabled resilientstorage
 dnf install -y resource-agents
 ```
 
