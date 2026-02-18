@@ -43,14 +43,14 @@ WORKDIR /build
 
 ## for debugging, set entrypoiint to bash for use set to ./build.bash
 ENTRYPOINT bash
-#ENTRYPOINT ./build.bash
+#ENTRYPOINT ./build-rocky.bash
 
 ## Build with:
-## docker build . -f lustre_client -t lustre_client_builder
+## docker build . -f lustre_client_rocky -t lustre_client_builder_rocky
 ##
 ## debug with
-## docker run -it  --volume ./build:/build  lustre_client_builder
+## docker run -it  --volume ./build:/build  lustre_client_builder_rocky
 ##
 ## run with
-## docker run  --volume ./build:/build  lustre_client_builder
+## docker run  --volume ./build:/build  lustre_client_builder_rocky
 ##
