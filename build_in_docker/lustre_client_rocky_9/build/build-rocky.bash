@@ -94,8 +94,24 @@ then
 cd build
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/debug/tree/Packages/k/kernel-debuginfo-$linuxVersion.rpm
 fi
+if [ ! -f /build/kernel-modules-$linuxVersion.rpm ];
+then
+cd build
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-$linuxVersion.rpm
+fi
+if [ ! -f /build/kernel-modules-core-$linuxVersion.rpm ];
+then
+cd build
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-core-$linuxVersion.rpm
+fi
+if [ ! -f /build/kernel-$linuxVersion.rpm ];
+then
+cd build
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-$linuxVersion.rpm
+fi
 
-dnf install -y ./kernel-abi-stablelists-$linuxVersion.rpm ./kernel-rpm-macros-$linuxVersion.rpm ./kernel-debuginfo-$linuxVersion.rpm
+
+dnf install -y ./kernel-abi-stablelists-$linuxVersion.rpm ./kernel-rpm-macros-$linuxVersion.rpm ./kernel-debuginfo-$linuxVersion.rpm ./kernel-modules-$linuxVersion.rpm ./kernel-modules-core-$linuxVersion.rpm ./kernel-$linuxVersion.rpm
 fi
 
 else
@@ -146,6 +162,11 @@ sed -i 's/BuildRequires: kernel >= 3.10/#BuildRequires: kernel >= 3.10/g' $Build
 ./autogen.sh
 if [ "$1" == "server" ];
 then
+
+## for the server support build we need to disable another check
+sed -i 's/! grep -q define\[\[\:space\:\]\]\*HAVE_SERVER_SUPPORT config.h 2> \/dev\/null/false/g'  $Buildpath/lustre.spec.in
+
+
 ./configure --enable-server --with-linux=/usr/src/kernels/$linuxVersion
 else
 ./configure --with-linux=/usr/src/kernels/$linuxVersion
