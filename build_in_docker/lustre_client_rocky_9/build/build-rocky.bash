@@ -23,7 +23,7 @@ noarchVersion=""
 if [ -n $linuxVersion ];
 then
 ## written for modern bash
-noarchVersion=${Linux::-6}noarch
+noarchVersion=${linuxVersion::-6}noarch
 fi
 
 ## Optional:
@@ -67,51 +67,59 @@ RockyVersion=9.$(echo $RockyVersionStep | cut -d '_' -f 2)
 ## check if the file aready exists, only download if not
 if [ ! -f /build/kernel-devel-$linuxVersion.rpm ];
 then
-cd build
+cd /build
 #http://d.rockylinux.org/vault/rocky/9.0/devel/x86_64/os/Packages/k/kernel-devel-5.14.0-70.30.1.el9_0.x86_64.rpm
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-devel-$linuxVersion.rpm
 fi
 
 ## install kernel-devel
-dnf install -y ./kernel-devel-$linuxVersion.rpm
+dnf install -y \
+/build/kernel-devel-$linuxVersion.rpm
 
 ## update the kernel related packages for the lustre server
-if [ "$1" == "server" ];
-then
-if [ ! -f /build/kernel-abi-stablelists-$noarchVersion.rpm ];
-then
-cd build
-#https://dl.rockylinux.org/vault/rocky/9.4/devel/x86_64/os/Packages/k/kernel-abi-stablelists-5.14.0-427.16.1.el9_4.noarch.rpm
-wget https://dl.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-abi-stablelists-$noarchVersion.rpm
+if [ "$1" == "server" ]; then
+cd /build
+
+if [ ! -f /build/kernel-abi-stablelists-$noarchVersion.rpm ]; then
+wget https://dl.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-abi-stablelists-$noarchVersion.rpm
 fi
-if [ ! -f /build/kernel-rpm-macros-$linuxVersion.rpm ];
-then
-cd build
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-rpm-macros-$linuxVersion.rpm
+#if [ ! -f /build/kernel-rpm-macros-$linuxVersion.rpm ]; then
+#http://d.rockylinux.org/vault/rocky/9.0/devel/x86_64/os/Packages/k/kernel-rpm-macros-185-11.el9.noarch.rpm
+#wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-rpm-macros-$linuxVersion.rpm
+#fi
+if [ ! -f /build/kernel-debuginfo-$linuxVersion.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-core-$linuxVersion.rpm
 fi
-if [ ! -f /build/kernel-debuginfo-$linuxVersion.rpm ];
-then
-cd build
+if [ ! -f /build/kernel-debuginfo-$linuxVersion.rpm ]; then
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/debug/tree/Packages/k/kernel-debuginfo-$linuxVersion.rpm
 fi
-if [ ! -f /build/kernel-modules-$linuxVersion.rpm ];
-then
-cd build
+if [ ! -f /build/kernel-debuginfo-common-x86_64-$linuxVersion.rpm ]; then
+wget http://dl.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/debug/tree/Packages/k/kernel-debuginfo-common-x86_64-$linuxVersion.rpm
+fi
+if [ ! -f /build/kernel-modules-$linuxVersion.rpm ]; then
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-$linuxVersion.rpm
 fi
-if [ ! -f /build/kernel-modules-core-$linuxVersion.rpm ];
-then
-cd build
+if [ ! -f /build/kernel-modules-core-$linuxVersion.rpm ]; then
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-core-$linuxVersion.rpm
 fi
-if [ ! -f /build/kernel-$linuxVersion.rpm ];
-then
-cd build
+if [ ! -f /build/kernel-$linuxVersion.rpm ]; then
 wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-$linuxVersion.rpm
 fi
 
+dnf install -y kernel-rpm-macros
+# doesn't seem to be kernel dependent:
+# /build/kernel-rpm-macros-$linuxVersion.rpm \
 
-dnf install -y ./kernel-abi-stablelists-$linuxVersion.rpm ./kernel-rpm-macros-$linuxVersion.rpm ./kernel-debuginfo-$linuxVersion.rpm ./kernel-modules-$linuxVersion.rpm ./kernel-modules-core-$linuxVersion.rpm ./kernel-$linuxVersion.rpm
+
+dnf install -y \
+/build/kernel-core-$linuxVersion.rpm \
+/build/kernel-abi-stablelists-$noarchVersion.rpm \
+/build/kernel-debuginfo-$linuxVersion.rpm \
+/build/kernel-debuginfo-common-x86_64-$linuxVersion.rpm \
+/build/kernel-modules-$linuxVersion.rpm \
+/build/kernel-modules-core-$linuxVersion.rpm \
+/build/kernel-$linuxVersion.rpm
+
 fi
 
 else
@@ -171,6 +179,7 @@ sed -i 's/! grep -q define\[\[\:space\:\]\]\*HAVE_SERVER_SUPPORT config.h 2> \/d
 else
 ./configure --with-linux=/usr/src/kernels/$linuxVersion
 fi
+
 make rpms
 
 # make the folder read- and writable to all
