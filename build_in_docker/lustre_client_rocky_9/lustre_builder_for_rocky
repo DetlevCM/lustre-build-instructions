@@ -46,11 +46,11 @@ ENTRYPOINT bash
 #ENTRYPOINT ./build-rocky.bash
 
 ## Build with:
-## docker build . -f lustre_client_rocky -t lustre_client_builder_rocky
+## docker build . -f lustre_builder_for_rocky -t lustre_builder_for_rocky
 ##
 ## debug with
-## docker run -it  --volume ./build:/build  lustre_client_builder_rocky
+## docker run -it  --volume ./build:/build  lustre_builder_for_rocky
 ##
 ## run with
-## docker run  --volume ./build:/build  lustre_client_builder_rocky
+## docker run  --volume ./build:/build  lustre_builder_for_rocky
 ##
