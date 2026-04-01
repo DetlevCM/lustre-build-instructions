@@ -180,11 +180,19 @@ else
 ./configure --with-linux=/usr/src/kernels/$linuxVersion
 fi
 
+## make regular rpms
 make rpms
+mkdir -p $Buildpath-rpm
+mv ./*.rpm $Buildpath-rpm/
+
+## make dkms rpms
+make dkms-rpm
+mkdir -p $Buildpath-dkms-rpm
+mv ./*.rpm $Buildpath-dkms-rpm/
 
 # make the folder read- and writable to all
 chmod -R a+rw $Buildpath
+chmod -R a+rw $Buildpath-rpm
+chmod -R a+rw $Buildpath-dkms-rpm
 
-mkdir -p $Buildpath-rpm
-mv ./*.rpm $Buildpath-rpm/
 
