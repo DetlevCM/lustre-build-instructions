@@ -84,7 +84,59 @@ Then run an image:
 docker pull hello-world:linux
 ```
 
+It is noteworthy that internally, docker runs as root.
+Thus any files written by docker will be owned by root.
+
 ## Running a Build
+
+### Rocky 9.x
 
 It is planned or hoped that the scripts can be upstreamed into the lustre code.
 For now, they are available in a personal public github repository at [https://github.com/DetlevCM/lustre-build-instructions/tree/main](https://github.com/DetlevCM/lustre-build-instructions/tree/main).
+
+The current structure requires a directory called `build` which needs to contain the build script. Ideally, the directory also contains a copy of the lustre source code and, for the server, the patched e2fsprogs source code, however if not, they will be downloaded using `git clone`.
+As the source repositories will be copied at compile, it is possible to mount these via the docker `--volume` option.
+By default, the script and container will build for the current version of the kernel using the master branch of lustre.
+However it is possible to define a linux kernel from the Rocky Vault as well as a specific lustre version, as well as e2fsprogs versions. 
+
+Building the base container is achieved with the following command:
+
+```bash
+docker build . -f lustre_builder_for_rocky -t lustre_builder_for_rocky
+```
+
+Assuming you have the build-directory with the build script, the simplest execution would be the following:
+
+```bash
+docker run  --volume ./build:/build  lustre_builder_for_rocky
+```
+
+If additional options are to be passed to the container, this can be achieved by placing them as a string in a variable called `BuilderOptions` as follows:
+
+```bash
+docker run  --volume ./build:/build  -e BuilderOptions="--lustreVersion=2.17.0 --linuxVersion=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky
+```
+
+The server is built by adding the keyword server to the build options:
+
+```bash
+docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky
+```
+
+An option to provide an external copy of the lustre source code would be the following execution:
+
+```bash
+docker run  --volume ./build:/build --volume ./lustre-release:/build/lustre-release.src lustre_builder_for_rocky
+```
+
+Available options are the following:
+
+```bash
+server
+--e2fsckVersion=
+--lustreVersion=
+--linuxVersion= 
+```
+
+This will create a directory of the pattern `lustre-lustreVersion-linuxVersion-rpm` with the regular kernel modules as well as the dkms modules in the build directory.
+These directories can then be copied and used to install or distribute the custom built lustre rpms.

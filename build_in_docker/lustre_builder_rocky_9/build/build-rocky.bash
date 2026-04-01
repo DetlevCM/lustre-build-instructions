@@ -1,22 +1,55 @@
 #/bin/bash
 
+## initialise
+e2fsckVersion="v1.47.3-wc1" # known good version for lustre 2.17.0
+lustreVersion="master"
+linuxVersion=$(ls /usr/src/kernels/)
 
 ##
 ## set whether lustre sources are already provided
 ## set the version og the lustre client to build
 ## set a specific linux kernel package to use if required
 ##
-LustreSourceRepo=/build/lustre-release.bak
-Version="2.17.0"
-LinuxVersion=""
-## set kernel-devel manually
-#linuxVersion="5.14.0-611.27.1.el9_7.x86_64"
-linuxVersion=5.14.0-570.22.1.el9_6.x86_64
-#linuxVersion=5.14.0-503.23.2.el9_5.x86_64
+LustreSourceRepo=/build/lustre-release.src
 
 ## e2fsprogs repo only needed with server build
-e2fsprogsSourceRepo=/build/e2fsprogs.bak
+e2fsprogsSourceRepo=/build/e2fsprogs.src
 noarchVersion=""
+
+
+function split_arguments() {
+  echo "$1" | cut -d "=" -f 2
+}
+
+## process user arguments
+for arg; do
+
+if [ $arg == "server" ]  ; then
+BuildServer="true"
+fi
+
+if [[ $arg == --e2fsckVersion=* ]] ; then
+  e2fsckVersion==$(split_arguments $arg)
+fi
+
+if [[ $arg == --lustreVersion=* ]] ; then
+  lustreVersion=$(split_arguments $arg)
+fi
+
+if [[ $arg == --linuxVersion=* ]] ; then
+  linuxVersion=$(split_arguments $arg)
+fi
+
+done
+
+
+## for testing only
+#echo $BuildServer
+#echo $e2fsckVersion
+#echo $lustreVersion
+#echo $linuxVersion
+#exit
+
 
 
 ## if a Linux version is set, we also need to be able to define noarch
@@ -57,15 +90,15 @@ fi
 
 ## if the user set a custom Linux version, use that
 ## https://unix.stackexchange.com/questions/571037/check-for-non-empty-string-in-the-shell-instead-of-z
-if [[ -n $linuxVersion ]];
-then
+if [[ -n $linuxVersion ]] ; then
 
 ## only works for Rocky 9.x
 RockyVersionStep=$(echo $linuxVersion | cut -d '.' -f 6)
 RockyVersion=9.$(echo $RockyVersionStep | cut -d '_' -f 2)
 
 ## check if the file aready exists, only download if not
-if [ ! -f /build/kernel-devel-$linuxVersion.rpm ];
+## no need to download if we use the latest kernel -> kernel-devel is alread installed
+if [ ! -f /build/kernel-devel-$linuxVersion.rpm ] && [  ${#linuxVersion} -gt 0 ] ;
 then
 cd /build
 #http://d.rockylinux.org/vault/rocky/9.0/devel/x86_64/os/Packages/k/kernel-devel-5.14.0-70.30.1.el9_0.x86_64.rpm
@@ -77,7 +110,9 @@ dnf install -y \
 /build/kernel-devel-$linuxVersion.rpm
 
 ## update the kernel related packages for the lustre server
-if [ "$1" == "server" ]; then
+## any of three parameters may be server
+#if [ "$1" == "server" ] || [ "$2" == "server" ] || [ "$3" == "server" ]; then
+if [ "$BuildServer" == true ] ; then
 cd /build
 
 if [ ! -f /build/kernel-abi-stablelists-$noarchVersion.rpm ]; then
@@ -132,13 +167,13 @@ fi
 if [ "$1" == "server" ];
 then
 
-Buildpath=/build/e2fsprogs-$Version-$linuxVersion
+Buildpath=/build/e2fsprogs-$lustreVersion-$linuxVersion
 echo $Buildpath
-cp -r $e2fsprogsSourceRepo /build/e2fsprogs-$Version-$linuxVersion
+cp -r $e2fsprogsSourceRepo /build/e2fsprogs-$lustreVersion-$linuxVersion
 cd $Buildpath
 
 ## build e2fsprogs
-git checkout v1.47.3-wc1 # tested
+git checkout $e2fsckVersion
 ./configure --enable-elf-shlibs
 
 ## these two tests fail
@@ -157,12 +192,12 @@ fi
 
 
 
-Buildpath=/build/lustre-release-$Version-$linuxVersion
+Buildpath=/build/lustre-release-$lustreVersion-$linuxVersion
 echo $Buildpath
-cp -r $LustreSourceRepo /build/lustre-release-$Version-$linuxVersion
+cp -r $LustreSourceRepo /build/lustre-release-$lustreVersion-$linuxVersion
 cd $Buildpath
 
-git checkout $Version
+git checkout $lustreVersion
 
 ## disable the kernel check - we build in a container
 sed -i 's/BuildRequires: kernel >= 3.10/#BuildRequires: kernel >= 3.10/g' $Buildpath/lustre.spec.in
@@ -180,6 +215,14 @@ else
 ./configure --with-linux=/usr/src/kernels/$linuxVersion
 fi
 
+## make rpms
+## # make the folder read- and writable to all
+## chmod -R a+rw $Buildpath
+##
+## mkdir -p $Buildpath-rpm
+## mv ./*.rpm $Buildpath-rpm/
+
+
 ## make regular rpms
 make rpms
 mkdir -p $Buildpath-rpm
@@ -194,5 +237,3 @@ mv ./*.rpm $Buildpath-dkms-rpm/
 chmod -R a+rw $Buildpath
 chmod -R a+rw $Buildpath-rpm
 chmod -R a+rw $Buildpath-dkms-rpm
-
-

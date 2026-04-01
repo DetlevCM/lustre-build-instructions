@@ -21,6 +21,7 @@ RUN dnf install -y libuuid-devel lsb_release texinfo libaio-devel swig quilt
 
 ## we need the ext4 sources for the server (not needed for the client)
 ## ensure same version as the kernel
+## these are installed for a specific version via script
 RUN dnf config-manager --set-enabled devel-debuginfo
 RUN dnf install -y kernel-debuginfo kernel-devel
 
@@ -41,9 +42,12 @@ RUN git config --global --add safe.directory '*'
 
 WORKDIR /build
 
-## for debugging, set entrypoint to bash for use set to ./build.bash
-ENTRYPOINT bash
-#ENTRYPOINT ./build-rocky.bash
+## environment variable for passing parameters
+ENV BuilderOptions=""
+
+## for debugging, set entrypoiint to bash for use set to ./build.bash
+#ENTRYPOINT bash
+ENTRYPOINT ./build-rocky.bash $BuilderOptions
 
 ## Build with:
 ## docker build . -f lustre_builder_for_rocky -t lustre_builder_for_rocky
@@ -53,4 +57,7 @@ ENTRYPOINT bash
 ##
 ## run with
 ## docker run  --volume ./build:/build  lustre_builder_for_rocky
+## docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky
+## docker run  --volume ./build:/build  -e BuilderOptions="--lustreVersion=2.17.0 server --linuxVersion=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky
 ##
+
