@@ -87,4 +87,4 @@ docker pull hello-world:linux
 ## Running a Build
 
 It is planned or hoped that the scripts can be upstreamed into the lustre code.
-For now, they are available in a personal public github repot at [https://github.com/DetlevCM/lustre-build-instructions/tree/main](https://github.com/DetlevCM/lustre-build-instructions/tree/main).
+For now, they are available in a personal public github repository at [https://github.com/DetlevCM/lustre-build-instructions/tree/main](https://github.com/DetlevCM/lustre-build-instructions/tree/main).
