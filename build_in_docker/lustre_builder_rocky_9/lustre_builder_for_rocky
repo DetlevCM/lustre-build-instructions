@@ -45,7 +45,7 @@ WORKDIR /build
 ## environment variable for passing parameters
 ENV BuilderOptions=""
 
-## for debugging, set entrypoiint to bash for use set to ./build.bash
+## for debugging, set entrypoint to bash for use set to ./build.bash
 #ENTRYPOINT bash
 ENTRYPOINT ./build-rocky.bash $BuilderOptions
 
