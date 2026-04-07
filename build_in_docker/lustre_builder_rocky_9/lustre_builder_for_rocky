@@ -58,6 +58,6 @@ ENTRYPOINT ./build-rocky.bash $BuilderOptions
 ## run with
 ## docker run  --volume ./build:/build  lustre_builder_for_rocky
 ## docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky
-## docker run  --volume ./build:/build  -e BuilderOptions="--lustreVersion=2.17.0 server --linuxVersion=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky
+## docker run  --volume ./build:/build  -e BuilderOptions="--versionLustre=2.17.0 server --versionLinux=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky
 ##
 

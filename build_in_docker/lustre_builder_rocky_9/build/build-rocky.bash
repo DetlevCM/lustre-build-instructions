@@ -1,9 +1,10 @@
 #/bin/bash
 
 ## initialise
-e2fsckVersion="v1.47.3-wc1" # known good version for lustre 2.17.0
-lustreVersion="master"
-linuxVersion=$(ls /usr/src/kernels/)
+versionE2fsck="v1.47.3-wc1" # known good version for lustre 2.17.0
+versionLustre="master"
+versionLinux=$(ls /usr/src/kernels/)
+BuildServer=""
 
 ##
 ## set whether lustre sources are already provided
@@ -28,16 +29,16 @@ if [ $arg == "server" ]  ; then
 BuildServer="true"
 fi
 
-if [[ $arg == --e2fsckVersion=* ]] ; then
-  e2fsckVersion==$(split_arguments $arg)
+if [[ $arg == --versionE2fsck=* ]] ; then
+  versionE2fsck==$(split_arguments $arg)
 fi
 
-if [[ $arg == --lustreVersion=* ]] ; then
-  lustreVersion=$(split_arguments $arg)
+if [[ $arg == --versionLustre=* ]] ; then
+  versionLustre=$(split_arguments $arg)
 fi
 
-if [[ $arg == --linuxVersion=* ]] ; then
-  linuxVersion=$(split_arguments $arg)
+if [[ $arg == --versionLinux=* ]] ; then
+  versionLinux=$(split_arguments $arg)
 fi
 
 done
@@ -45,18 +46,18 @@ done
 
 ## for testing only
 #echo $BuildServer
-#echo $e2fsckVersion
-#echo $lustreVersion
-#echo $linuxVersion
+#echo $versionE2fsck
+#echo $versionLustre
+#echo $versionLinux
 #exit
 
 
 
 ## if a Linux version is set, we also need to be able to define noarch
-if [ -n $linuxVersion ];
+if [ -n $versionLinux ];
 then
 ## written for modern bash
-noarchVersion=${linuxVersion::-6}noarch
+noarchVersion=${versionLinux::-6}noarch
 fi
 
 ## Optional:
@@ -84,76 +85,76 @@ if [ "$1" == "server" ];
 then
 if [ ! -d "$e2fsprogsSourceRepo" ];
 then
-git clone "https://review.whamcloud.com/tools/e2fsprogs"
+git clone "https://review.whamcloud.com/tools/e2fsprogs" $e2fsprogsSourceRepo
 fi
 fi
 
 ## if the user set a custom Linux version, use that
 ## https://unix.stackexchange.com/questions/571037/check-for-non-empty-string-in-the-shell-instead-of-z
-if [[ -n $linuxVersion ]] ; then
+if [[ -n $versionLinux ]] ; then
 
 ## only works for Rocky 9.x
-RockyVersionStep=$(echo $linuxVersion | cut -d '.' -f 6)
+RockyVersionStep=$(echo $versionLinux | cut -d '.' -f 6)
 RockyVersion=9.$(echo $RockyVersionStep | cut -d '_' -f 2)
 
 ## check if the file aready exists, only download if not
 ## no need to download if we use the latest kernel -> kernel-devel is alread installed
-if [ ! -f /build/kernel-devel-$linuxVersion.rpm ] && [  ${#linuxVersion} -gt 0 ] ;
+if [ ! -f /build/kernel-devel-$versionLinux.rpm ] && [  ${#versionLinux} -gt 0 ] ;
 then
 cd /build
 #http://d.rockylinux.org/vault/rocky/9.0/devel/x86_64/os/Packages/k/kernel-devel-5.14.0-70.30.1.el9_0.x86_64.rpm
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-devel-$linuxVersion.rpm
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-devel-$versionLinux.rpm
 fi
 
 ## install kernel-devel
 dnf install -y \
-/build/kernel-devel-$linuxVersion.rpm
+/build/kernel-devel-$versionLinux.rpm
 
 ## update the kernel related packages for the lustre server
 ## any of three parameters may be server
 #if [ "$1" == "server" ] || [ "$2" == "server" ] || [ "$3" == "server" ]; then
-if [ "$BuildServer" == true ] ; then
+if [ "$BuildServer" == "true" ] ; then
 cd /build
 
 if [ ! -f /build/kernel-abi-stablelists-$noarchVersion.rpm ]; then
 wget https://dl.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-abi-stablelists-$noarchVersion.rpm
 fi
-#if [ ! -f /build/kernel-rpm-macros-$linuxVersion.rpm ]; then
+#if [ ! -f /build/kernel-rpm-macros-$versionLinux.rpm ]; then
 #http://d.rockylinux.org/vault/rocky/9.0/devel/x86_64/os/Packages/k/kernel-rpm-macros-185-11.el9.noarch.rpm
-#wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-rpm-macros-$linuxVersion.rpm
+#wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-rpm-macros-$versionLinux.rpm
 #fi
-if [ ! -f /build/kernel-debuginfo-$linuxVersion.rpm ]; then
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-core-$linuxVersion.rpm
+if [ ! -f /build/kernel-debuginfo-$versionLinux.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-core-$versionLinux.rpm
 fi
-if [ ! -f /build/kernel-debuginfo-$linuxVersion.rpm ]; then
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/debug/tree/Packages/k/kernel-debuginfo-$linuxVersion.rpm
+if [ ! -f /build/kernel-debuginfo-$versionLinux.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/debug/tree/Packages/k/kernel-debuginfo-$versionLinux.rpm
 fi
-if [ ! -f /build/kernel-debuginfo-common-x86_64-$linuxVersion.rpm ]; then
-wget http://dl.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/debug/tree/Packages/k/kernel-debuginfo-common-x86_64-$linuxVersion.rpm
+if [ ! -f /build/kernel-debuginfo-common-x86_64-$versionLinux.rpm ]; then
+wget http://dl.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/debug/tree/Packages/k/kernel-debuginfo-common-x86_64-$versionLinux.rpm
 fi
-if [ ! -f /build/kernel-modules-$linuxVersion.rpm ]; then
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-$linuxVersion.rpm
+if [ ! -f /build/kernel-modules-$versionLinux.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-$versionLinux.rpm
 fi
-if [ ! -f /build/kernel-modules-core-$linuxVersion.rpm ]; then
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-core-$linuxVersion.rpm
+if [ ! -f /build/kernel-modules-core-$versionLinux.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/devel/x86_64/os/Packages/k/kernel-modules-core-$versionLinux.rpm
 fi
-if [ ! -f /build/kernel-$linuxVersion.rpm ]; then
-wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-$linuxVersion.rpm
+if [ ! -f /build/kernel-$versionLinux.rpm ]; then
+wget http://d.rockylinux.org/vault/rocky/$RockyVersion/BaseOS/x86_64/os/Packages/k/kernel-$versionLinux.rpm
 fi
 
 dnf install -y kernel-rpm-macros
 # doesn't seem to be kernel dependent:
-# /build/kernel-rpm-macros-$linuxVersion.rpm \
+# /build/kernel-rpm-macros-$versionLinux.rpm \
 
 
 dnf install -y \
-/build/kernel-core-$linuxVersion.rpm \
+/build/kernel-core-$versionLinux.rpm \
 /build/kernel-abi-stablelists-$noarchVersion.rpm \
-/build/kernel-debuginfo-$linuxVersion.rpm \
-/build/kernel-debuginfo-common-x86_64-$linuxVersion.rpm \
-/build/kernel-modules-$linuxVersion.rpm \
-/build/kernel-modules-core-$linuxVersion.rpm \
-/build/kernel-$linuxVersion.rpm
+/build/kernel-debuginfo-$versionLinux.rpm \
+/build/kernel-debuginfo-common-x86_64-$versionLinux.rpm \
+/build/kernel-modules-$versionLinux.rpm \
+/build/kernel-modules-core-$versionLinux.rpm \
+/build/kernel-$versionLinux.rpm
 
 fi
 
@@ -164,16 +165,16 @@ fi
 
 
 ## build and install e2fsprogs if we want to build the server
-if [ "$1" == "server" ];
+if [ "$BuildServer" == "true" ];
 then
 
-Buildpath=/build/e2fsprogs-$lustreVersion-$linuxVersion
+Buildpath=/build/e2fsprogs-$versionLustre-$versionLinux
 echo $Buildpath
-cp -r $e2fsprogsSourceRepo /build/e2fsprogs-$lustreVersion-$linuxVersion
+cp -r $e2fsprogsSourceRepo /build/e2fsprogs-$versionLustre-$versionLinux
 cd $Buildpath
 
 ## build e2fsprogs
-git checkout $e2fsckVersion
+git checkout $versionE2fsck
 ./configure --enable-elf-shlibs
 
 ## these two tests fail
@@ -192,35 +193,27 @@ fi
 
 
 
-Buildpath=/build/lustre-release-$lustreVersion-$linuxVersion
+Buildpath=/build/lustre-release-$versionLustre-$versionLinux
 echo $Buildpath
-cp -r $LustreSourceRepo /build/lustre-release-$lustreVersion-$linuxVersion
+cp -r $LustreSourceRepo /build/lustre-release-$versionLustre-$versionLinux
 cd $Buildpath
 
-git checkout $lustreVersion
+git checkout $versionLustre
 
 ## disable the kernel check - we build in a container
 sed -i 's/BuildRequires: kernel >= 3.10/#BuildRequires: kernel >= 3.10/g' $Buildpath/lustre.spec.in
 
 ./autogen.sh
-if [ "$1" == "server" ];
+if [ "$BuildServer" == "true" ];
 then
 
 ## for the server support build we need to disable another check
 sed -i 's/! grep -q define\[\[\:space\:\]\]\*HAVE_SERVER_SUPPORT config.h 2> \/dev\/null/false/g'  $Buildpath/lustre.spec.in
 
-
-./configure --enable-server --with-linux=/usr/src/kernels/$linuxVersion
+./configure --enable-server --with-linux=/usr/src/kernels/$versionLinux
 else
-./configure --with-linux=/usr/src/kernels/$linuxVersion
+./configure --with-linux=/usr/src/kernels/$versionLinux
 fi
-
-## make rpms
-## # make the folder read- and writable to all
-## chmod -R a+rw $Buildpath
-##
-## mkdir -p $Buildpath-rpm
-## mv ./*.rpm $Buildpath-rpm/
 
 
 ## make regular rpms
