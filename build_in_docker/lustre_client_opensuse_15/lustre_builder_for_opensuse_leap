@@ -33,6 +33,8 @@ RUN zypper install -y keyutils-devel
 RUN zypper remove -y busybox-gzip
 RUN zypper install -y rpm-build gzip libopenssl-devel
 
+## for command hostname
+RUN zypper install -y net-tools
 
 ## as we copy git repos around
 RUN git config --global --add safe.directory '*'
@@ -40,16 +42,23 @@ RUN git config --global --add safe.directory '*'
 
 WORKDIR /build
 
+
+## environment variable for passing parameters
+ENV BuilderOptions=""
+
 ## for debugging, set entrypoiint to bash for use set to ./build.bash
-ENTRYPOINT bash
-#ENTRYPOINT ./build-leap.bash
+#ENTRYPOINT bash
+ENTRYPOINT ./build-leap.bash $BuilderOptions
 
 ## Build with:
 ## docker build . -f lustre_builder_for_opensuse_leap -t lustre_builder_for_opensuse_leap
 ##
 ## debug with
-## docker run -it  --volume ./build:/build  lustre_builder_for_opensuse_leap
+## docker run -it  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src lustre_builder_for_opensuse_leap
 ##
 ## run with
-## docker run  --volume ./build:/build  lustre_builder_for_opensuse_leap
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  lustre_builder_for_opensuse_leap
 ##
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0" lustre_builder_for_opensuse_leap
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0 --versionLinux=6.4.0-150600.23.92" lustre_builder_for_opensuse_leap
+
