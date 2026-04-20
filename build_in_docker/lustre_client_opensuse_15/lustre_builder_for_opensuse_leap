@@ -46,7 +46,7 @@ WORKDIR /build
 ## environment variable for passing parameters
 ENV BuilderOptions=""
 
-## for debugging, set entrypoiint to bash for use set to ./build.bash
+## for debugging, set entrypoint to bash for use set to ./build.bash
 #ENTRYPOINT bash
 ENTRYPOINT ./build-leap.bash $BuilderOptions
 
@@ -61,4 +61,3 @@ ENTRYPOINT ./build-leap.bash $BuilderOptions
 ##
 ## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0" lustre_builder_for_opensuse_leap
 ## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0 --versionLinux=6.4.0-150600.23.92" lustre_builder_for_opensuse_leap
-

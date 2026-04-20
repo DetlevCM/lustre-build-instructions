@@ -44,6 +44,7 @@
         "libmnl",
         "libmount",
         "libnl",
+        "libopenssl",
         "libss",
         "libssh",
         "libtirpc",
@@ -60,6 +61,7 @@
         "numactl",
         "opencsd",
         "openssl",
+        "opensuse",
         "patchless",
         "pciutils",
         "pdsh",
@@ -82,6 +84,7 @@
         "SRPMS",
         "stablelists",
         "suse",
+        "syms",
         "sysfs",
         "texinfo",
         "topdir",
@@ -92,6 +95,7 @@
         "writeconf",
         "xattr",
         "xmlto",
+        "zypp",
         "zypper"
     ]
 }

@@ -31,14 +31,17 @@ fi
 
 if [[ $arg == --versionE2fsck=* ]] ; then
   versionE2fsck==$(split_arguments $arg)
+  echo $versionE2fsck
 fi
 
 if [[ $arg == --versionLustre=* ]] ; then
   versionLustre=$(split_arguments $arg)
+  echo $versionLustre
 fi
 
 if [[ $arg == --versionLinux=* ]] ; then
   versionLinux=$(split_arguments $arg)
+  echo $versionLinux
 fi
 
 done
@@ -97,8 +100,8 @@ if [[ -n $versionLinux ]] ; then
 RockyVersionStep=$(echo $versionLinux | cut -d '.' -f 6)
 RockyVersion=9.$(echo $RockyVersionStep | cut -d '_' -f 2)
 
-## check if the file aready exists, only download if not
-## no need to download if we use the latest kernel -> kernel-devel is alread installed
+## check if the file already exists, only download if not
+## no need to download if we use the latest kernel -> kernel-devel is already installed
 if [ ! -f /build/kernel-devel-$versionLinux.rpm ] && [  ${#versionLinux} -gt 0 ] ;
 then
 cd /build
