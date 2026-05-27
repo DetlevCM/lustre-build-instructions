@@ -1,4 +1,4 @@
-#/bin/bash
+#!/usr/bin/bash
 
 ## default variables for user parameters
 versionKernelMacros=""

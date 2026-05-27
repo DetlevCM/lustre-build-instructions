@@ -1,4 +1,4 @@
-#/bin/bash
+#!/usr/bin/bash
 
 ## initialise
 versionE2fsck="v1.47.3-wc1" # known good version for lustre 2.17.0
