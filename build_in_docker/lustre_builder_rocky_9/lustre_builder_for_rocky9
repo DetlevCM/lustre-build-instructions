@@ -1,0 +1,63 @@
+FROM rockylinux/rockylinux:9.7
+
+RUN dnf update -y
+RUN dnf install -y dnf-plugins-core # special need for docker
+
+## for the kernel packages
+RUN yum -y groupinstall "Development Tools"
+RUN dnf config-manager --set-enabled crb
+
+## essentials for building lustre
+RUN dnf install -y git gcc autoconf make libtool flex bison python3-devel glibc-static gcc-plugin-devel python3-sphinx  python3-sphinx_rtd_theme
+RUN dnf install -y libmount-devel libnl3 libnl3-devel libyaml libyaml-devel
+RUN dnf install -y wget vim
+
+## to build rpms - ensure same version as the kernel
+RUN dnf install -y kernel-abi-stablelists kernel-rpm-macros
+
+## for e2fsprogs and lustre server
+RUN dnf install -y epel-release
+RUN dnf install -y libuuid-devel lsb_release texinfo libaio-devel swig quilt
+
+## we need the ext4 sources for the server (not needed for the client)
+## ensure same version as the kernel
+## these are installed for a specific version via script
+RUN dnf config-manager --set-enabled devel-debuginfo
+RUN dnf install -y kernel-debuginfo kernel-devel
+
+## if we only build the client, we don't need the patched e2fsprogs
+RUN dnf install -y e2fsprogs-devel
+
+
+## for GSS keyring backend requires
+RUN dnf install -y keyutils keyutils-libs keyutils-libs-devel
+
+## for resource agents
+RUN dnf config-manager --set-enabled resilientstorage
+RUN dnf install -y resource-agents
+
+## as we copy git repos around
+RUN git config --global --add safe.directory '*'
+
+
+WORKDIR /build
+
+## environment variable for passing parameters
+ENV BuilderOptions=""
+
+## for debugging, set entrypoint to bash for use set to ./build.bash
+#ENTRYPOINT bash
+ENTRYPOINT ./build-rocky.bash $BuilderOptions
+
+## Build with:
+## docker build . -f lustre_builder_for_rocky9 -t lustre_builder_for_rocky9
+##
+## debug with
+## docker run -it  --volume ./build:/build  lustre_builder_for_rocky9
+##
+## run with
+## docker run  --volume ./build:/build  lustre_builder_for_rocky9
+## docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky9
+## docker run  --volume ./build:/build  -e BuilderOptions="--versionLustre=2.17.0 server --versionLinux=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky9
+##
+

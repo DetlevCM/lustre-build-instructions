@@ -1,7 +1,7 @@
 #/bin/bash
 
 ## initialise
-versionE2fsck="v1.47.3-wc1" # known good version for lustre 2.17.0
+versionE2fsck="v1.47.3-wc2" # known good version for lustre 2.17.0
 versionLustre="master"
 versionLinux=$(ls /usr/src/kernels/)
 BuildServer=""

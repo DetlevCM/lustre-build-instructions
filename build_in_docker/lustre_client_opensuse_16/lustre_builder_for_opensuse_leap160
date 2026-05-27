@@ -1,0 +1,64 @@
+FROM opensuse/leap:16.0
+
+RUN zypper clean
+RUN zypper ref -f
+RUN zypper update -y
+
+## essentials for building lustre
+RUN zypper install -y git gcc autoconf make libtool flex bison python3-devel glibc-static
+RUN zypper install -y python3-sphinx_rtd_theme
+RUN zypper install -y libmount-devel  libnl3-devel  libyaml-devel
+RUN zypper install -y wget vim
+
+## for e2fsprogs and lustre server
+RUN zypper install -y libuuid-devel texinfo libaio-devel swig
+
+## we need the ext4 sources for the server (not needed for the client)
+## ensure same version as the kernel
+RUN zypper install -y  kernel-devel
+
+## if we only build the client, we don't need the patched e2fsprogs
+RUN zypper install -y e2fsprogs-devel
+
+## for GSS keyring backend requires
+RUN zypper install -y keyutils keyutils-libs
+
+## for resource agents
+RUN zypper install -y resource-agents
+
+### first leap tweaks (not copied from rocky)
+RUN zypper install -y kernel-syms kernel-macros kernel-default kernel-default-devel
+RUN zypper install -y keyutils-devel
+
+RUN zypper install -y rpm-build gzip libopenssl-devel
+
+## for command hostname
+RUN zypper install -y net-tools
+
+## as we copy git repos around
+RUN git config --global --add safe.directory '*'
+
+
+WORKDIR /build
+
+
+## environment variable for passing parameters
+ENV BuilderOptions=""
+
+## for debugging, set entrypoiint to bash for use set to ./build.bash
+#ENTRYPOINT bash
+ENTRYPOINT ./build-leap.bash $BuilderOptions
+
+## Build with:
+## docker build . -f lustre_builder_for_opensuse_leap160 -t lustre_builder_for_opensuse_leap160
+##
+## debug with
+## docker run -it  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src lustre_builder_for_opensuse_leap160
+## docker run -it  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src --volume ./e2fsprogs.bak:/build/e2fsprogs.src lustre_builder_for_opensuse_leap160
+##
+## run with
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  lustre_builder_for_opensuse_leap160
+##
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0" lustre_builder_for_opensuse_leap160
+## docker run  --volume ./build:/build --volume ./lustre-release.bak:/build/lustre-release.src  -e BuilderOptions="--versionLustre=2.17.0 --versionLinux=6.4.0-150600.23.92" lustre_builder_for_opensuse_leap160
+

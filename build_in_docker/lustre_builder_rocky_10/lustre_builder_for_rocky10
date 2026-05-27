@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9.7
+FROM rockylinux/rockylinux:10.0
 
 RUN dnf update -y
 RUN dnf install -y dnf-plugins-core # special need for docker
@@ -32,8 +32,8 @@ RUN dnf install -y e2fsprogs-devel
 ## for GSS keyring backend requires
 RUN dnf install -y keyutils keyutils-libs keyutils-libs-devel
 
-## for resource agents
-RUN dnf config-manager --set-enabled resilientstorage
+## for resource agents (Rocky 9 -> resilientstorage, Rocky 10 -> highavailability)
+RUN dnf config-manager --set-enabled highavailability
 RUN dnf install -y resource-agents
 
 ## as we copy git repos around
@@ -50,14 +50,12 @@ ENV BuilderOptions=""
 ENTRYPOINT ./build-rocky.bash $BuilderOptions
 
 ## Build with:
-## docker build . -f lustre_builder_for_rocky -t lustre_builder_for_rocky
+## docker build . -f lustre_builder_for_rocky10 -t lustre_builder_for_rocky10
 ##
 ## debug with
-## docker run -it  --volume ./build:/build  lustre_builder_for_rocky
+## docker run -it  --volume ./build:/build  lustre_builder_for_rocky10
 ##
 ## run with
-## docker run  --volume ./build:/build  lustre_builder_for_rocky
-## docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky
-## docker run  --volume ./build:/build  -e BuilderOptions="--versionLustre=2.17.0 server --versionLinux=5.14.0-570.32.1.el9_6.x86_64" lustre_builder_for_rocky
+## docker run  --volume ./build:/build  lustre_builder_for_rocky10
+## docker run  --volume ./build:/build  -e BuilderOptions="server" lustre_builder_for_rocky10
 ##
-
