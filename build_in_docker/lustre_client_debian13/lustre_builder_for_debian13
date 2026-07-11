@@ -1,0 +1,42 @@
+FROM debian:13
+
+RUN apt -y update
+
+## essentials for building lustre
+RUN apt -y install  git gcc autoconf make libtool flex bison
+RUN apt -y install  wget vim
+
+## for e2fsprogs and lustre server
+#RUN apt -y install  epel-release
+RUN apt -y install swig quilt
+
+## we need the ext4 sources for the server (not needed for the client)
+## ensure same version as the kernel
+RUN apt -y install linux-headers-generic
+RUN apt -y install linux-image-generic
+RUN apt -y install linux-source
+
+RUN apt -y install libkeyutils-dev libmount1 libmount-dev pkgconf libnl-3-dev libnl-genl-3-dev libyaml-dev zlib1g-dev dpkg-dev
+
+## needed  by buildpackage
+RUN apt -y install module-assistant libreadline-dev debhelper rsync libssl-dev libpython3-dev
+
+## as we copy git repos around
+RUN git config --global --add safe.directory '*'
+
+WORKDIR /build
+
+## for debugging, set entrypoiint to bash for use set to ./build.bash
+ENTRYPOINT bash
+#ENTRYPOINT ./build.bash
+
+## Build with:
+## docker build . -f lustre_builder_for_debian13 -t lustre_builder_for_debian13
+##
+## debug with
+## docker run -it  --volume ./build:/build  lustre_builder_for_debian13
+##
+## run with
+## docker run  --volume ./build:/build  lustre_builder_for_debian13
+##
+
