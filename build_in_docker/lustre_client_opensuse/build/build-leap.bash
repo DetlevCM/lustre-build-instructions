@@ -180,14 +180,13 @@ git checkout $versionLustre
 
 
 ## Leap 16.0 needs some spefici tweaks:
-grep -g 'PRETTY_NAME="openSUSE Leap 16.0"' /etc/os-release
-if [ $? - eq 0 ] ; # it is Leap 16.0
+n=$(grep -wic 'PRETTY_NAME="openSUSE Leap 16.' /etc/os-release)
+if [ $n -ge 0 ] ; # it is Leap 16.0
 then
 ## define als sle 160000 - NOTE: no longer required
 #sed -i 's/# spec file template for RHEL package builds\n#/# spec file template for RHEL package builds\n#\n%define sle_version 160000\n/g' $Buildpath/lustre.spec.in
 ## remove debug package
-#sed -i 's/%if 0%{?suse_version}\n%debug_package\n%endif//g' $Buildpath/lustre.spec.in
-sed -i 's/%debug_package//g' $Buildpath/lustre.spec.in
+sed -i '/%debug_package/d' $Buildpath/lustre.spec.in
 fi
 
 ## disable the kernel check - we build in a container
