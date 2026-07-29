@@ -7,3 +7,5 @@ On OpenSUSE Leap 15.6 and 16.0 the client can be built within a container.
 The latest kernel in the container is employed by default, it is possible to supply custom packages to build against a different kernel.
 
 On Ubuntu 24.04, the client can be built within a container. Only the latest kernel in the container is currently supported.
+
+On Debian 13  the client can be built within a container. Only the latest kernel in the container is currently supported.
