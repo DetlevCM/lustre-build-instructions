@@ -178,18 +178,34 @@ echo $(pwd)
 
 git checkout $versionLustre
 
+
+## Leap 16.0 needs some spefici tweaks:
+grep -g 'PRETTY_NAME="openSUSE Leap 16.0"' /etc/os-release
+if [ $? - eq 0 ] ; # it is Leap 16.0
+then
+## define als sle 160000 - NOTE: no longer required
+#sed -i 's/# spec file template for RHEL package builds\n#/# spec file template for RHEL package builds\n#\n%define sle_version 160000\n/g' $Buildpath/lustre.spec.in
+## remove debug package
+#sed -i 's/%if 0%{?suse_version}\n%debug_package\n%endif//g' $Buildpath/lustre.spec.in
+sed -i 's/%debug_package//g' $Buildpath/lustre.spec.in
+fi
+
 ## disable the kernel check - we build in a container
-sed -i 's/BuildRequires: kernel >= 3.10/#BuildRequires: kernel >= 3.10/g' $Buildpath/lustre.spec.in
+## this version will increased from 2.17.0 to 2.18.0 based on master, hence the comparison needs to be generic
+sed -i 's/BuildRequires: kernel >= /#BuildRequires: kernel >= /g' $Buildpath/lustre.spec.in
 
 ./autogen.sh
+
+## currently openSUSE only supports the client packages
 #if [ "$BuildServer" == "true" ];
 #then
 ## for the server support build we need to disable another check
 #sed -i 's/! grep -q define\[\[\:space\:\]\]\*HAVE_SERVER_SUPPORT config.h 2> \/dev\/null/false/g'  $Buildpath/lustre.spec.in
-#./configure --enable-server --with-linux=/usr/src/kernels/$versionLinux
+#./configure --enable-server --enable-client --with-linux=/usr/src/kernels/$versionLinux
 #else
 ## currently supports only client builds
-./configure --with-linux=/usr/src/$versionLinux --with-linux-obj=/usr/src/$versionLinux-obj/x86_64/default
+./configure --disable-server --enable-client --with-linux=/usr/src/$versionLinux --with-linux-obj=/usr/src/$versionLinux-obj/x86_64/default
+
 #fi
 
 
