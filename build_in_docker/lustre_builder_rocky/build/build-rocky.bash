@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 ## initialise
-versionE2fsck="v1.47.3-wc1" # known good version for lustre 2.17.0
+versionE2fsck="v1.47.3-wc2" # known good version for lustre 2.17.0
 versionLustre="master"
 versionLinux=$(ls /usr/src/kernels/)
 BuildServer=""
@@ -204,7 +204,7 @@ cd $Buildpath
 git checkout $versionLustre
 
 ## disable the kernel check - we build in a container
-sed -i 's/BuildRequires: kernel >= 3.10/#BuildRequires: kernel >= 3.10/g' $Buildpath/lustre.spec.in
+sed -i 's/BuildRequires: kernel >= /#BuildRequires: kernel >= /g' $Buildpath/lustre.spec.in
 
 ./autogen.sh
 if [ "$BuildServer" == "true" ];
@@ -213,9 +213,9 @@ then
 ## for the server support build we need to disable another check
 sed -i 's/! grep -q define\[\[\:space\:\]\]\*HAVE_SERVER_SUPPORT config.h 2> \/dev\/null/false/g'  $Buildpath/lustre.spec.in
 
-./configure --enable-server --with-linux=/usr/src/kernels/$versionLinux
+./configure --enable-server --enable-client --with-linux=/usr/src/kernels/$versionLinux
 else
-./configure --with-linux=/usr/src/kernels/$versionLinux
+./configure --disable-server --enable-client --with-linux=/usr/src/kernels/$versionLinux
 fi
 
 
