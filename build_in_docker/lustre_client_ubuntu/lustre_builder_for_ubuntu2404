@@ -29,12 +29,12 @@ ENTRYPOINT bash
 #ENTRYPOINT ./build.bash
 
 ## Build with:
-## docker build . -f lustre_builder_for_ubuntu -t lustre_builder_for_ubuntu
+## docker build . -f lustre_builder_for_ubuntu2404 -t lustre_builder_for_ubuntu2404
 ##
 ## debug with
-## docker run -it  --volume ./build:/build  lustre_builder_for_ubuntu
+## docker run -it  --volume ./build:/build  lustre_builder_for_ubuntu2404
 ##
 ## run with
-## docker run  --volume ./build:/build  lustre_builder_for_ubuntu
+## docker run  --volume ./build:/build  lustre_builder_for_ubuntu2404
 ##
 
