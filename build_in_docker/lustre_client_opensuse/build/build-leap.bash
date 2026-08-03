@@ -68,7 +68,7 @@ done
 
 
 ## Current kernels can be found in the opensuse repositories, however there is no history:
-## paths are included as a reference for potential future developments 
+## paths are included as a reference for potential future developments
 ## there also seems to be version number mismatches in the repo - but not when installing via zypper
 ## https://download.opensuse.org/update/leap/15.6/sle/noarch/kernel-macros-6.4.0-150600.23.7.2.noarch.rpm
 ## https://download.opensuse.org/distribution/leap/15.6/repo/oss/x86_64/kernel-syms-6.4.0-150600.16.1.x86_64.rpm
