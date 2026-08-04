@@ -94,6 +94,8 @@ git checkout $Version
 ## help for ubuntu:
 ## https://support.hpe.com/hpesc/public/docDisplay?docId=sd00001837en_us&page=GUID-08035157-261F-4107-B06A-2ABCE43B4BF4.html
 ./configure \
+--disable-server \
+--enable-client \
 --with-linux=/usr/src/linux-headers-$linuxVersion \
 --with-linux-obj=/usr/src/linux-headers-$linuxVersion-generic \
 --with-linux-config=/boot/config-$linuxVersion-generic

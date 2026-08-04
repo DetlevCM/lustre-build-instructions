@@ -12,13 +12,14 @@
 
 
 LustreSourceRepo=/build/lustre-release.bak
-Version="2.17.0"
+Version="master"
 linuxVersion=""
 
 ## Get the Linux Version from the headers
 #linuxVersion="6.8.0-101"
 linuxVersion="$(ls /usr/src/ | head -1 | cut -c 15-)"
-linuxVersion="6.12.95+deb13-amd64"
+#linuxVersion="6.12.100+deb13-amd64" ## Debian 13 style
+linuxVersion="6.1.0-51-amd64"        ## Debain 12 style
 
 ## e2fsprogs repo only needed with server build
 e2fsprogsSourceRepo=/build/e2fsprogs.bak
@@ -94,6 +95,8 @@ git checkout $Version
 ## help for ubuntu:
 ## https://support.hpe.com/hpesc/public/docDisplay?docId=sd00001837en_us&page=GUID-08035157-261F-4107-B06A-2ABCE43B4BF4.html
 ./configure \
+--disable-server \
+--enable-client \
 --with-linux=/usr/src/linux-headers-$linuxVersion
 #\
 #--with-linux=/usr/src/linux-headers-$linuxVersion \
