@@ -46,7 +46,7 @@ WORKDIR /build
 ## environment variable for passing parameters
 ENV BuilderOptions=""
 
-## for debugging, set entrypoint to bash for use set to ./build.bash
+## for debugging, set entrypoint to bash for use set to ./build-leap.bash
 #ENTRYPOINT bash
 ENTRYPOINT ./build-leap.bash $BuilderOptions
 

@@ -24,9 +24,9 @@ RUN git config --global --add safe.directory '*'
 
 WORKDIR /build
 
-## for debugging, set entrypoiint to bash for use set to ./build.bash
+## for debugging, set entrypoiint to bash for use set to ./build-ubuntu.bash
 ENTRYPOINT bash
-#ENTRYPOINT ./build.bash
+#ENTRYPOINT ./build-ubuntu.bash
 
 ## Build with:
 ## docker build . -f lustre_builder_for_ubuntu2604 -t lustre_builder_for_ubuntu2604

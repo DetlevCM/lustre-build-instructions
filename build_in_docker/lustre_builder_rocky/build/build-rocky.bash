@@ -30,7 +30,7 @@ BuildServer="true"
 fi
 
 if [[ $arg == --versionE2fsck=* ]] ; then
-  versionE2fsck==$(split_arguments $arg)
+  versionE2fsck=$(split_arguments $arg)
   echo $versionE2fsck
 fi
 

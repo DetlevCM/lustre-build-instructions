@@ -26,9 +26,9 @@ RUN git config --global --add safe.directory '*'
 
 WORKDIR /build
 
-## for debugging, set entrypoiint to bash for use set to ./build.bash
+## for debugging, set entrypoiint to bash for use set to ./build-debian.bash
 ENTRYPOINT bash
-#ENTRYPOINT ./build.bash
+#ENTRYPOINT ./build-debian.bash
 
 ## Build with:
 ## docker build . -f lustre_builder_for_debian13 -t lustre_builder_for_debian13
